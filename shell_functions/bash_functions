@@ -1,5 +1,5 @@
 
-DOCKER_OPTIONS="--sig-proxy=true -i -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube --rm cloud-tools:0.0.1"
+DOCKER_OPTIONS="--sig-proxy=true -i -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube --rm cdancy/cloud-tools:0.0.1"
 
 # function to invoke docker via docker image
 function d() { __execute_command docker "$@" ; }

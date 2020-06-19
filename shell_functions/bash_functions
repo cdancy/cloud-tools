@@ -1,0 +1,30 @@
+
+DOCKER_OPTIONS="--sig-proxy=true -i -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube --rm cloud-tools:0.0.1"
+
+# function to invoke docker via docker image
+function d() { __execute_command docker "$@" ; }
+
+# function to invoke helm via docker image
+function h() { __execute_command helm "$@" ; }
+
+# function to invoke kubectl via docker image
+function k() { __execute_command kubectl "$@" ; }
+
+# function to invoke aws via docker image
+function a() { __execute_command aws "$@" ; }
+
+# function to invoke aws-saml via docker image
+function as() { __execute_command aws-saml "$@" ; }
+
+# function to invoke python3 via docker image
+function p() {
+  if [ -z "$@" ]; then command="--help"; else command="$@"; fi
+  __execute_command python3 $command
+}
+
+function __execute_command() {
+  docker_host_env=`printenv DOCKER_HOST`
+  if [ ! -z "$docker_host_env" ]; then docker_host_env="-e DOCKER_HOST=$docker_host_env"; fi 
+  eval docker run $docker_host_env $DOCKER_OPTIONS "$@" ; 
+}
+

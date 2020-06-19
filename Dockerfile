@@ -9,7 +9,7 @@ COPY --from=helmKubectl /usr/local/bin/helm /usr/local/bin/helm
 
 RUN pip install awscli awssamlpy3 \
   && mkdir -p /etc/docker \
-  && echo {\"hosts\": [\"unix:///var/run/docker.sock\", \"tcp://0.0.0.0:2375\"]} > /etc/docker/daemon.json \
+  && echo {\"hosts\": [\"unix:///var/run/docker.sock\"]} > /etc/docker/daemon.json \
   && rm -rf /var/cache/apk/* /tmp/*
 
 FROM release

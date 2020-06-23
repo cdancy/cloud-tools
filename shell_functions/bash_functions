@@ -1,22 +1,27 @@
+DOCKER_REPO="cdancy/cloud-tools"
+DOCKER_TAG="0.0.2"
+DOCKER_VOLUMES="-v ~/.okta-aws:/root/.okta-aws -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube"
+DOCKER_OPTIONS="--sig-proxy=true -i $DOCKER_VOLUMES --rm $DOCKER_REPO:$DOCKER_TAG"
 
-DOCKER_OPTIONS="--sig-proxy=true -i -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube --rm cdancy/cloud-tools:0.0.1"
-
-# function to invoke docker via docker image
-function d() { __execute_command docker "$@" ; }
-
-# function to invoke helm via docker image
-function h() { __execute_command helm "$@" ; }
-
-# function to invoke kubectl via docker image
-function k() { __execute_command kubectl "$@" ; }
-
-# function to invoke aws via docker image
+# function to invoke aws
 function a() { __execute_command aws "$@" ; }
 
-# function to invoke aws-saml via docker image
+# function to invoke aws-saml
 function as() { __execute_command aws-saml "$@" ; }
 
-# function to invoke python3 via docker image
+# function to invoke docker
+function d() { __execute_command docker "$@" ; }
+
+# function to invoke helm
+function h() { __execute_command helm "$@" ; }
+
+# function to invoke kubectl
+function kc() { __execute_command kubectl "$@" ; }
+
+# function to invoke octa-awscli
+function oac() { __execute_command okta-awscli "$@" ; }
+
+# function to invoke python3
 function p() {
   if [ -z "$@" ]; then command="--help"; else command="$@"; fi
   __execute_command python3 $command

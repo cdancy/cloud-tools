@@ -1,0 +1,67 @@
+DOCKER_REPO="cdancy/cloud-tools"
+DOCKER_TAG="0.0.3"
+DOCKER_IMAGE="$DOCKER_REPO:$DOCKER_TAG"
+DATA_CONTAINER_NAME="cloud_tools_data_$DOCKER_TAG"
+
+# function to invoke aws
+function aws() { __execute_command aws "$@" $(printenv DOCKER_AWS_ARGS) ; }
+
+# function to invoke aws-saml
+function aws-saml() { __execute_command aws-saml "$@" $(printenv DOCKER_AWS_SAML_ARGS) ; }
+
+# function to invoke docker
+function dind() { __execute_command docker "$@" $(printenv DOCKER_DIND_ARGS) ; }
+
+# function to invoke helm
+function helm() { __execute_command helm "$@" $(printenv DOCKER_HELM_ARGS) ; }
+
+# function to invoke kubectl
+function kubectl() { __execute_command kubectl "$@" $(printenv DOCKER_KUBECTL_ARGS) ; }
+
+# function to invoke octa-awscli
+function okta-awscli() { __execute_command okta-awscli "$@" $(printenv DOCKER_OCTA_AWSCLI_ARGS) ; }
+
+# function to invoke python3
+function python-3() { __execute_command python3 "$@" $(printenv DOCKER_PYTHON_3_ARGS) ; }
+
+# function to invoke istioctl
+function istioctl() { __execute_command istioctl "$@" $(printenv DOCKER_ISTIOCTL_ARGS) ; }
+
+# function to invoke terraform
+function terraform() { __execute_command terraform "$@" $(printenv DOCKER_TERRAFORM_ARGS) ; }
+
+# function to actually jump into the container
+function cloud-tools() { 
+  docker_context_args="-it"
+  __execute_command "sh" 
+}
+
+function __execute_command() {
+
+  # global user docker volumes to pass along
+  # and should be of the format: `-v /tmp:/tmp`
+  docker_user_volumes=`printenv DOCKER_USER_VOLUMES`
+  docker_volumes="$docker_user_volumes -v ~/.okta-aws:/root/.okta-aws -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube"
+
+  # global user docker env-vars to pass along
+  # and should be of the format: `-e HELLO=WORLD -e ONE=TWO`
+  docker_env_vars=`printenv DOCKER_ENV_VARS`
+
+  # special check for DOCKER_HOST env-var as it's
+  # a standard at this point to expect its use if present
+  docker_host_env=`printenv DOCKER_HOST`
+  if [ ! -z "$docker_host_env" ]; then docker_env_vars="$docker_env_vars -e DOCKER_HOST=$docker_host_env"; fi
+
+  # global user docker options to pass along: use at your OWN RISK!!!
+  docker_user_options=`printenv DOCKER_USER_OPTIONS`
+  docker_options="$docker_user_options --sig-proxy=true -i $docker_volumes --rm $DOCKER_IMAGE"
+
+  # start data container to hold our volume with all of our binaries
+  docker inspect $DATA_CONTAINER_NAME > /dev/null 2>&1
+  if [ $? -eq 1 ] ; then
+    docker create --name $DATA_CONTAINER_NAME $DOCKER_IMAGE > /dev/null 2>&1
+  fi
+
+  # start main container
+  eval docker run --volumes-from $DATA_CONTAINER_NAME $docker_context_args $docker_env_vars $docker_options "$@" ;
+}

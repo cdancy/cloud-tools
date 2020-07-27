@@ -1,8 +1,9 @@
 DOCKER_REPO="cdancy/cloud-tools"
-DOCKER_TAG="0.0.4"
+DOCKER_TAG="0.0.5"
 DOCKER_IMAGE="$DOCKER_REPO:$DOCKER_TAG"
 DOCKER_DATA_CONTAINER_NAME="cloud_tools_$DOCKER_TAG"
 DOCKER_RUNTIME_CONTAINER_IMAGE="alpine:3.12"
+DOCKER_TERMINAL_ENV_VARS="-e TERM=xterm-256color -e EDITOR=nano -e K9S_EDITOR=nano"
 DOCKER_VOLUMES="-v ~/.okta-aws:/root/.okta-aws -v ~/.awssaml.properties:/root/.awssaml.properties -v ~/.aws:/root/.aws -v ~/.kube:/root/.kube"
 
 # function to invoke aws
@@ -35,9 +36,15 @@ function terraform() { __execute_command terraform "$@" $(printenv DOCKER_TERRAF
 # function to invoke glooctl
 function glooctl() { __execute_command glooctl "$@" $(printenv DOCKER_GLOOCTL_ARGS) ; }
 
+# function to invoke k9s
+function k9s() {
+  docker_context_args="-it $DOCKER_TERMINAL_ENV_VARS"
+  __execute_command k9s "$@" $(printenv DOCKER_K9S_ARGS)
+}
+
 # function to actually jump into the container
 function cloud-tools() {
-  docker_context_args="-it"
+  docker_context_args="-it $DOCKER_TERMINAL_ENV_VARS"
   __execute_command "sh"
 }
 

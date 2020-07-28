@@ -1,5 +1,5 @@
 DOCKER_REPO="cdancy/cloud-tools"
-DOCKER_TAG="0.0.5"
+DOCKER_TAG="0.0.6"
 DOCKER_IMAGE="$DOCKER_REPO:$DOCKER_TAG"
 DOCKER_DATA_CONTAINER_NAME="cloud_tools_$DOCKER_TAG"
 DOCKER_RUNTIME_CONTAINER_IMAGE="alpine:3.12"
@@ -42,7 +42,13 @@ function k9s() {
   __execute_command k9s "$@" $(printenv DOCKER_K9S_ARGS)
 }
 
-# function to actually jump into the container
+# function to invoke kubectx
+function kubectx() { __execute_command kubectx "$@" $(printenv DOCKER_KUBECTX_ARGS) ; }
+
+# function to invoke kubens
+function kubens() { __execute_command kubens "$@" $(printenv DOCKER_KUBENS_ARGS) ; }
+
+# function to invoke cloud-tools which puts the user into the container
 function cloud-tools() {
   docker_context_args="-it $DOCKER_TERMINAL_ENV_VARS"
   __execute_command "sh"

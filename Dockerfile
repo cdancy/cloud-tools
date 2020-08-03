@@ -24,7 +24,7 @@ ARG kubectx_version=0.9.1
 ARG kubens_version=0.9.1
 ARG gloo_version=1.4.6
 RUN pip install awscli awssamlpy3 okta-awscli \
-  && apk add nano \
+  && apk add nano groff less\
   && mkdir -p /etc/docker \
   && echo {\"hosts\": [\"unix:///var/run/docker.sock\"]} > /etc/docker/daemon.json \
   && rm -rf /var/cache/apk/* /tmp/* \
